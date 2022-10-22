@@ -26,6 +26,7 @@ class PostURLTests(TestCase):
     def setUp(self):
         self.guest_client = Client()
         self.authorized_client = Client()
+        self.client_enforce_csrf_checks = Client(enforce_csrf_checks=True)
         self.authorized_client.force_login(self.user)
 
     def test_public_pages(self):
@@ -57,15 +58,23 @@ class PostURLTests(TestCase):
             'posts/profile.html': '/profile/auth/',
             'posts/post_detail.html': f'/posts/{str(self.post.pk)}/',
             'core/404.html': '/unexisting_page/',
-            
-            
-
 
         }
         for template, url in templates_url_names.items():
             with self.subTest(url=url):
                 response = self.authorized_client.get(url)
                 self.assertTemplateUsed(response, template)
+
+    def test_page_403(self):
+        response = self.client_enforce_csrf_checks.post('/create/')
+        self.assertTemplateUsed(response, 'core/403csrf.html')
+
+    def test_page_403(self):
+        try:
+            response = self.authorized_client.get('/error-500/')
+            self.assertTemplateUsed(response, 'core/500.html')
+        except Exception:
+            self.assertRaisesMessage(Exception, 'Make response code 500!')
 
     def test_page_404(self):
         url_names = [
@@ -79,6 +88,3 @@ class PostURLTests(TestCase):
             with self.subTest(url=url):
                 response = self.guest_client.get(url)
                 self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
-    
-
-    

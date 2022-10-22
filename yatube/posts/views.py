@@ -3,7 +3,6 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import PostForm, CommentForm
 from .models import Post, Group, User, Follow
-from django.views.decorators.cache import cache_page
 
 from .utils import get_page_context
 
@@ -94,7 +93,7 @@ def post_edit(request, post_id):
         post = form.save()
         return redirect(reverse('posts:post_detail',
                         kwargs={'post_id': post_id}))
-    
+
     return render(request, 'posts/create_post.html',
                   {'form': form, 'is_edit': is_edit, 'post': post})
 
@@ -111,14 +110,17 @@ def add_comment(request, post_id):
         return redirect(reverse('posts:post_detail',
                         kwargs={'post_id': post_id}))
 
+
 @login_required
 def follow_index(request):
     page_obj = get_page_context(request,
-                                Post.objects.filter(author__following__user=request.user), 20)
+                                Post.objects.filter(
+                                    author__following__user=request.user), 20)
     context = {
         'page_obj': page_obj,
     }
     return render(request, 'posts/follow.html', context)
+
 
 @login_required
 def profile_follow(request, username):
@@ -128,13 +130,16 @@ def profile_follow(request, username):
     if user != author and not is_follower.exists():
         Follow.objects.create(user=user, author=author)
     return redirect(reverse('posts:profile', args=[username]))
-    
+
+
 @login_required
 def profile_unfollow(request, username):
     author = get_object_or_404(User, username=username)
     is_follower = Follow.objects.filter(user=request.user, author=author)
     if is_follower.exists():
         is_follower.delete()
-    return redirect('posts:profile', username=author)   
+    return redirect('posts:profile', username=author)
 
-   
+
+def trigger_error_500(request):
+    raise Exception('Make response code 500!')

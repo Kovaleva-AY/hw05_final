@@ -17,7 +17,7 @@ class PostTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        settings.MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR) 
+        settings.MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
         small_gif = (
             b'\x47\x49\x46\x38\x39\x61\x02\x00'
             b'\x01\x00\x80\x00\x00\x00\x00\x00'
@@ -49,8 +49,8 @@ class PostTests(TestCase):
             group=Group.objects.create(
                 title='Заголовок 2 для тестовой группы',
                 slug='slug2'),
-                image=uploaded)
-    
+            image=uploaded)
+
     @classmethod
     def tearDownClass(cls):
         shutil.rmtree(settings.MEDIA_ROOT, ignore_errors=True)
@@ -266,5 +266,3 @@ class FollowTests(TestCase):
         response = self.client_auth_following.get('/follow/')
         self.assertNotContains(response,
                                self.post.text)
-
-    

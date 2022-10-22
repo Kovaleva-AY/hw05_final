@@ -14,6 +14,7 @@ User = get_user_model()
 
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
+
 @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
 class PostCreateFormTests(TestCase):
     @classmethod
@@ -36,20 +37,18 @@ class PostCreateFormTests(TestCase):
             post=cls.post)
 
         cls.form = PostForm()
-    
+
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
         shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
 
-   
     def setUp(self):
         self.guest_client = Client()
         self.user = User.objects.get(username='auth')
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
 
-    
     def test_create_comment(self):
         form_data = {
             'text': 'Данные из формы',
@@ -71,7 +70,7 @@ class PostCreateFormTests(TestCase):
                         ).exists())
         self.assertEqual(Comment.objects.count(), count_comment + 1)
         self.assertRedirects(response, reverse('posts:post_detail',
-                        kwargs={'post_id': self.post.pk}))
+                             kwargs={'post_id': self.post.pk}))
 
     def test_create_post(self):
         form_data = {
@@ -158,16 +157,16 @@ class PostCreateFormTests(TestCase):
         self.assertNotEqual(Post.objects.count(),
                             posts_count + 1,
                             error_name2)
-    
+
     def test_create_post_with_picture(self):
-        posts_count = Post.objects.count()  
-        small_gif = (            
-             b'\x47\x49\x46\x38\x39\x61\x02\x00'
-             b'\x01\x00\x80\x00\x00\x00\x00\x00'
-             b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
-             b'\x00\x00\x00\x2C\x00\x00\x00\x00'
-             b'\x02\x00\x01\x00\x00\x02\x02\x0C'
-             b'\x0A\x00\x3B'
+        posts_count = Post.objects.count()
+        small_gif = (
+            b'\x47\x49\x46\x38\x39\x61\x02\x00'
+            b'\x01\x00\x80\x00\x00\x00\x00\x00'
+            b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
+            b'\x00\x00\x00\x2C\x00\x00\x00\x00'
+            b'\x02\x00\x01\x00\x00\x02\x02\x0C'
+            b'\x0A\x00\x3B'
         )
         uploaded = SimpleUploadedFile(
             name='small.gif',
@@ -187,9 +186,9 @@ class PostCreateFormTests(TestCase):
         )
         # Проверяем, сработал ли редирект
         self.assertRedirects(response, reverse('posts:profile',
-                             kwargs={'username':  f'{self.user.username}'}))
+                             kwargs={'username': f'{self.user.username}'}))
         # Проверяем, увеличилось ли число постов
-        self.assertEqual(Post.objects.count(), posts_count+1)
+        self.assertEqual(Post.objects.count(), posts_count + 1)
 
         # Проверяем, что создалась запись с заданным слагом
         self.assertTrue(
@@ -197,4 +196,4 @@ class PostCreateFormTests(TestCase):
                 text='Тестовый текст',
                 image='posts/small.gif'
             ).exists()
-        ) 
+        )
