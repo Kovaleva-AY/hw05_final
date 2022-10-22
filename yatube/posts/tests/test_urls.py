@@ -57,7 +57,9 @@ class PostURLTests(TestCase):
             'posts/profile.html': '/profile/auth/',
             'posts/post_detail.html': f'/posts/{str(self.post.pk)}/',
             'core/404.html': '/unexisting_page/',
-            'core/403csrf.html': 
+            
+            
+
 
         }
         for template, url in templates_url_names.items():
