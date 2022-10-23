@@ -109,6 +109,8 @@ def add_comment(request, post_id):
         comment.save()
         return redirect(reverse('posts:post_detail',
                         kwargs={'post_id': post_id}))
+    return render(request, 'posts/post_detail.html', {'form': form,
+                  'post': post})
 
 
 @login_required
@@ -139,7 +141,3 @@ def profile_unfollow(request, username):
     if is_follower.exists():
         is_follower.delete()
     return redirect('posts:profile', username=author)
-
-
-def trigger_error_500(request):
-    raise Exception('Make response code 500!')

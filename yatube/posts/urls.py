@@ -21,7 +21,6 @@ urlpatterns = [
     path('profile/<str:username>/unfollow/',
          views.profile_unfollow,
          name='profile_unfollow'),
-    path('error-500/', views.trigger_error_500, name='error_500'),
 ]
 
 if settings.DEBUG:

@@ -69,13 +69,6 @@ class PostURLTests(TestCase):
         response = self.client_enforce_csrf_checks.post('/create/')
         self.assertTemplateUsed(response, 'core/403csrf.html')
 
-    def test_page_403(self):
-        try:
-            response = self.authorized_client.get('/error-500/')
-            self.assertTemplateUsed(response, 'core/500.html')
-        except Exception:
-            self.assertRaisesMessage(Exception, 'Make response code 500!')
-
     def test_page_404(self):
         url_names = [
             '/unexisting_page/',
